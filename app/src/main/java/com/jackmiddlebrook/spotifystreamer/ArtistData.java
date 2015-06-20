@@ -5,7 +5,8 @@ import android.os.Parcelable;
 
 /**
  * Created by jackmiddlebrook on 6/19/15.
- * Plain Old Java Object used for data transport in Spotify Streamer app.
+ * Plain Old Java Object used for storing artist data and
+ * transporting the data in Spotify Streamer app.
  */
 public class ArtistData implements Parcelable {
 

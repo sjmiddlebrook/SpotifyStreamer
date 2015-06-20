@@ -180,6 +180,7 @@ public class MainActivityFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        setData(null);
                         mArtistAdapter.clear();
                         Toast.makeText(getActivity(),
                                 "No Artist were found. Try searching again.",

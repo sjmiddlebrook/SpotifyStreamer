@@ -7,4 +7,5 @@
     <string name="artist_name_placeholder">Artist Name Here</string>
     <string name="title_activity_top_tracks">TopTracksActivity</string>
     <string name="hello_world">Hello world!</string>
+    <string name="track_image_content_description">album image for top track</string>
 </resources>
