@@ -31,8 +31,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import kaaes.spotify.webapi.android.SpotifyApi;
+import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Artist;
+import kaaes.spotify.webapi.android.models.ArtistsPager;
+import kaaes.spotify.webapi.android.models.Image;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 
 
 /**
@@ -40,7 +48,10 @@ import java.util.List;
  */
 public class MainActivityFragment extends Fragment {
 
+    private final String TAG = MainActivityFragment.class.getSimpleName();
+
     public ArrayAdapter<String> mArtistAdapter;
+    public ListView mListView;
 
     public MainActivityFragment() {
     }
@@ -61,7 +72,7 @@ public class MainActivityFragment extends Fragment {
 
         int id = item.getItemId();
         if (id == R.id.action_refresh) {
-            new FetchArtistTask().execute("Neil");
+            new FetchArtistTask().execute("");
             return true;
         }
 
@@ -80,7 +91,10 @@ public class MainActivityFragment extends Fragment {
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 boolean handled = false;
                 if (i == EditorInfo.IME_ACTION_SEARCH) {
-                    new FetchArtistTask().execute(String.valueOf(textView.getText()));
+                    String searchText = String.valueOf(textView.getText());
+//                    new FetchArtistTask().execute(searchText);
+                    getArtistsFromSpotify(searchText);
+
                     handled = true;
                 }
 
@@ -93,21 +107,7 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
-        String[] artistArray = {
-                "The National",
-                "Of Monsters and Men",
-                "Arcade Fire",
-                "Mumford and Sons",
-                "Houndmouth",
-                "St. Motel",
-                "Jake Bugg",
-                "Haim",
-                "Neil Young",
-                "The Beatles",
-                "Chromeo"
-        };
-
-        List<String> artistList = new ArrayList<>(Arrays.asList(artistArray));
+        List<String> artistList = new ArrayList<>();
 
         mArtistAdapter = new ArrayAdapter<>(
                 getActivity(),
@@ -116,15 +116,63 @@ public class MainActivityFragment extends Fragment {
                 artistList
         );
 
-        ListView listView = (ListView) rootView.findViewById(R.id.artist_listview);
-        listView.setAdapter(mArtistAdapter);
+        mListView = (ListView) rootView.findViewById(R.id.artist_listview);
+        mListView.setAdapter(mArtistAdapter);
 
         return rootView;
     }
 
+    private void getArtistsFromSpotify(final String artistName) {
+
+        SpotifyApi api = new SpotifyApi();
+        SpotifyService spotify = api.getService();
+
+        spotify.searchArtists(artistName, new Callback<ArtistsPager>() {
+            @Override
+            public void success(ArtistsPager artistsPager, Response response) {
+                final List<Artist> artistsResults = artistsPager.artists.items;
+                final List<ArtistData> artistInfo = new ArrayList<>();
+
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mArtistAdapter.clear();
+                        for (Artist artist : artistsResults) {
+                            mArtistAdapter.add(artist.name);
+                            String name = artist.name;
+                            List<Image> imageList = artist.images;
+                            String imageUrl = "";
+                            for (int i = 0; i < imageList.size(); i++) {
+                                if (i == 0) {
+                                    Image image = imageList.get(i);
+                                    imageUrl = image.url;
+                                }
+                            }
+                            String spotifyId = artist.id;
+                            artistInfo.add(new ArtistData(name, imageUrl, spotifyId));
+                        }
+                        for (ArtistData data : artistInfo) {
+                            Log.v(TAG, data.toString());
+                        }
+                    }
+                });
+
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                Log.d(TAG, error.toString());
+            }
+        });
+
+    }
+
+
     private class FetchArtistTask extends AsyncTask<String, Void, String[]> {
 
         private final String TAG = FetchArtistTask.class.getSimpleName();
+
 
         private String[] getArtistDataFromJson(String artistSearchJsonStr, int numOfArtist) throws JSONException{
 
@@ -153,9 +201,6 @@ public class MainActivityFragment extends Fragment {
                 resultStrs[i] = artist;
             }
 
-            for (String s : resultStrs) {
-                Log.v(TAG, "Artist Search Result: " + s);
-            }
             return resultStrs;
         }
 
@@ -261,8 +306,11 @@ public class MainActivityFragment extends Fragment {
                 for (String artistName : strings) {
                     mArtistAdapter.add(artistName);
                 }
-            }
+            } else {
+                // clear out the list
+                mArtistAdapter.clear();
 
+            }
         }
     }
 }
