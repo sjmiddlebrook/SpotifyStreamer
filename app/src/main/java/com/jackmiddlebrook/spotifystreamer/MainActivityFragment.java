@@ -2,6 +2,7 @@ package com.jackmiddlebrook.spotifystreamer;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
@@ -16,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -71,7 +73,6 @@ public class MainActivityFragment extends Fragment {
         if (id == R.id.action_refresh) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -105,13 +106,25 @@ public class MainActivityFragment extends Fragment {
         if (savedInstanceState != null) {
             Bundle bundle = savedInstanceState.getBundle(DATA_BUNDLE_KEY);
             mArtistDataList = bundle.getParcelableArrayList(DATA_VALUE_KEY);
-            for (ArtistData data : mArtistDataList) {
-                mArtistAdapter.add(data);
+            if (mArtistDataList != null) {
+                for (ArtistData data : mArtistDataList) {
+                    mArtistAdapter.add(data);
+                }
             }
         }
 
         ListView listView = (ListView) rootView.findViewById(R.id.artist_listview);
         listView.setAdapter(mArtistAdapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ArtistData data = mArtistAdapter.getItem(i);
+                String artistId = data.mSpotifyId;
+                Intent intent = new Intent(getActivity(), TopTracksActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, artistId);
+                startActivity(intent);
+            }
+        });
 
         return rootView;
     }
