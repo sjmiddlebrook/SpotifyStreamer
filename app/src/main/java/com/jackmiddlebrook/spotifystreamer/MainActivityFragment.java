@@ -1,7 +1,10 @@
 package com.jackmiddlebrook.spotifystreamer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -16,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,10 +41,16 @@ public class MainActivityFragment extends Fragment {
 
     private final String TAG = MainActivityFragment.class.getSimpleName();
 
-    public ArtistDataArrayAdapter mArtistAdapter;
-    public ListView mListView;
+    private ArtistDataArrayAdapter mArtistAdapter;
+    private List<ArtistData> mArtistDataList;
+    private final String DATA_VALUE_KEY = "artist data list";
+    private final String DATA_BUNDLE_KEY = "artist data bundle";
 
     public MainActivityFragment() {
+    }
+
+    public void setData(List<ArtistData> dataList) {
+        mArtistDataList = dataList;
     }
 
     @Override
@@ -82,23 +92,26 @@ public class MainActivityFragment extends Fragment {
                     handled = true;
                 }
 
-                //hide the keyboard
-                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
-                        Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
+                hideKeyboard(getActivity(), searchEditText.getWindowToken());
 
                 return handled;
             }
         });
 
-        List<String> artistList = new ArrayList<>();
-
         mArtistAdapter = new ArtistDataArrayAdapter(
                 getActivity(),
                 R.id.list_item_artist_textview);
 
-        mListView = (ListView) rootView.findViewById(R.id.artist_listview);
-        mListView.setAdapter(mArtistAdapter);
+        if (savedInstanceState != null) {
+            Bundle bundle = savedInstanceState.getBundle(DATA_BUNDLE_KEY);
+            mArtistDataList = bundle.getParcelableArrayList(DATA_VALUE_KEY);
+            for (ArtistData data : mArtistDataList) {
+                mArtistAdapter.add(data);
+            }
+        }
+
+        ListView listView = (ListView) rootView.findViewById(R.id.artist_listview);
+        listView.setAdapter(mArtistAdapter);
 
         return rootView;
     }
@@ -126,14 +139,21 @@ public class MainActivityFragment extends Fragment {
                     String spotifyId = artist.id;
                     artistInfo.add(new ArtistData(name, imageUrl, spotifyId));
                 }
-
+                setData(artistInfo);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         mArtistAdapter.clear();
-                        for (ArtistData data : artistInfo) {
-                            mArtistAdapter.add(data);
-                            Log.v(TAG, data.toString());
+                        if (artistInfo.size() > 0) {
+                            for (ArtistData data : artistInfo) {
+                                mArtistAdapter.add(data);
+                                Log.v(TAG, data.toString());
+                            }
+                        } else {
+                            mArtistAdapter.clear();
+                            Toast.makeText(getActivity(),
+                                    "No Artist were found. Try searching again.",
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -144,8 +164,37 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void failure(RetrofitError error) {
                 Log.d(TAG, error.toString());
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mArtistAdapter.clear();
+                        Toast.makeText(getActivity(),
+                                "No Artist were found. Try searching again.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
             }
         });
+    }
 
+    public Bundle getBundledData() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(DATA_VALUE_KEY, (ArrayList<? extends Parcelable>) mArtistDataList);
+        return bundle;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBundle(DATA_BUNDLE_KEY, getBundledData());
+    }
+
+    public static void hideKeyboard(Activity activity,
+                                    IBinder windowToken) {
+        InputMethodManager mgr =
+                (InputMethodManager) activity.getSystemService
+                        (Context.INPUT_METHOD_SERVICE);
+        mgr.hideSoftInputFromWindow(windowToken,
+                0);
     }
 }
