@@ -10,9 +10,6 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
@@ -58,22 +55,6 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.artist_fragment_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-        if (id == R.id.action_refresh) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -120,8 +101,10 @@ public class MainActivityFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 ArtistData data = mArtistAdapter.getItem(i);
                 String artistId = data.mSpotifyId;
+                String artistName = data.mName;
                 Intent intent = new Intent(getActivity(), TopTracksActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, artistId);
+                        .putExtra(Intent.EXTRA_TEXT, artistId)
+                        .putExtra("ARTIST_NAME", artistName);
                 startActivity(intent);
             }
         });

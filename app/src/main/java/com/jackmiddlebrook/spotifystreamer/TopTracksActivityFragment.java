@@ -3,6 +3,8 @@ package com.jackmiddlebrook.spotifystreamer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,7 +36,6 @@ public class TopTracksActivityFragment extends Fragment {
     private final String TAG = TopTracksActivityFragment.class.getSimpleName();
 
     private TrackDataArrayAdapter mTrackAdapter;
-    private List<TrackData> mTrackDataList;
 
     public TopTracksActivityFragment() {
     }
@@ -45,7 +46,7 @@ public class TopTracksActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_top_tracks, container, false);
         Intent intent = getActivity().getIntent();
         String spotifyId = intent.getStringExtra(Intent.EXTRA_TEXT);
-
+        String artistName = intent.getStringExtra("ARTIST_NAME");
         mTrackAdapter = new TrackDataArrayAdapter(
                 getActivity(),
                 R.id.list_item_track_name_text_view
@@ -55,6 +56,8 @@ public class TopTracksActivityFragment extends Fragment {
 
         ListView listView = (ListView) rootView.findViewById(R.id.tracks_list_view);
         listView.setAdapter(mTrackAdapter);
+
+        getActionBar().setSubtitle(artistName);
 
         return rootView;
     }
@@ -117,6 +120,10 @@ public class TopTracksActivityFragment extends Fragment {
                 });
             }
         });
+    }
+
+    private ActionBar getActionBar() {
+        return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
 }
