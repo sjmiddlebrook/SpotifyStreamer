@@ -143,7 +143,6 @@ public class MainActivityFragment extends Fragment {
                         if (artistInfo.size() > 0) {
                             for (ArtistData data : artistInfo) {
                                 mArtistAdapter.add(data);
-                                Log.v(TAG, data.toString());
                             }
                         } else {
                             mArtistAdapter.clear();

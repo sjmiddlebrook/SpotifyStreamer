@@ -6,6 +6,10 @@
     <string name="artist_image_content_description">Artist Image</string>
     <string name="artist_name_placeholder">Artist Name Here</string>
     <string name="title_activity_top_tracks">TopTracksActivity</string>
+    <string name="title_activity_settings">SettingsActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="track_image_content_description">album image for top track</string>
+    <string name="country_pref_key" translatable="false">country</string>
+    <string name="country_pref_title">Country for Top Tracks</string>
+    <string name="country_pref_default_value">US</string>
 </resources>

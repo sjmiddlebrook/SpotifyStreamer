@@ -1,7 +1,9 @@
 package com.jackmiddlebrook.spotifystreamer;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -66,7 +68,14 @@ public class TopTracksActivityFragment extends Fragment {
         SpotifyApi api = new SpotifyApi();
         SpotifyService spotify = api.getService();
         Map<String, Object> queryMap = new HashMap<>();
-        queryMap.put("country", "US");
+        SharedPreferences sharedPrefs =
+                PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String countryCode = sharedPrefs.getString(
+                getString(R.string.country_pref_key),
+                getString(R.string.country_pref_default_value)
+        );
+
+        queryMap.put("country", countryCode);
         spotify.getArtistTopTrack(spotifyId, queryMap, new Callback<Tracks>() {
             @Override
             public void success(Tracks tracks, Response response) {
@@ -94,7 +103,6 @@ public class TopTracksActivityFragment extends Fragment {
                         if (trackDataResults.size() > 0) {
                             for (TrackData data : trackDataResults) {
                                 mTrackAdapter.add(data);
-                                Log.v(TAG, data.toString());
                             }
                         } else {
                             mTrackAdapter.clear();
