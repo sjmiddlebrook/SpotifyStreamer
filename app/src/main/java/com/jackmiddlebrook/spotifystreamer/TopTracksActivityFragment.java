@@ -74,7 +74,6 @@ public class TopTracksActivityFragment extends Fragment {
                 getString(R.string.country_pref_key),
                 getString(R.string.country_pref_default_value)
         );
-
         queryMap.put("country", countryCode);
         spotify.getArtistTopTrack(spotifyId, queryMap, new Callback<Tracks>() {
             @Override
@@ -107,7 +106,7 @@ public class TopTracksActivityFragment extends Fragment {
                         } else {
                             mTrackAdapter.clear();
                             Toast.makeText(getActivity(),
-                                    "No Top Tracks were found. Try searching again.",
+                                    getString(R.string.no_tracks_found_text),
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -122,7 +121,7 @@ public class TopTracksActivityFragment extends Fragment {
                     public void run() {
                         mTrackAdapter.clear();
                         Toast.makeText(getActivity(),
-                                "No Top Tracks were found. Try searching again.",
+                                getString(R.string.no_tracks_found_text),
                                 Toast.LENGTH_SHORT).show();
                     }
                 });
