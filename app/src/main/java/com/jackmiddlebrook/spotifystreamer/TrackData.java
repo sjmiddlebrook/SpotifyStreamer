@@ -10,10 +10,9 @@ import android.os.Parcelable;
  */
 public class TrackData implements Parcelable {
 
-
-    public String mTrackName;
-    public String mAlbumImageUrl;
-    public String mAlbumName;
+    private String mTrackName;
+    private String mAlbumImageUrl;
+    private String mAlbumName;
 
     /**
      * Constructor
@@ -26,6 +25,30 @@ public class TrackData implements Parcelable {
     public TrackData(String trackName, String imageUrl, String albumName) {
         mTrackName = trackName;
         mAlbumImageUrl = imageUrl;
+        mAlbumName = albumName;
+    }
+
+    public String getTrackName() {
+        return mTrackName;
+    }
+
+    public void setTrackName(String trackName) {
+        mTrackName = trackName;
+    }
+
+    public String getAlbumImageUrl() {
+        return mAlbumImageUrl;
+    }
+
+    public void setAlbumImageUrl(String albumImageUrl) {
+        mAlbumImageUrl = albumImageUrl;
+    }
+
+    public String getAlbumName() {
+        return mAlbumName;
+    }
+
+    public void setAlbumName(String albumName) {
         mAlbumName = albumName;
     }
 

@@ -100,8 +100,8 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 ArtistData data = mArtistAdapter.getItem(i);
-                String artistId = data.mSpotifyId;
-                String artistName = data.mName;
+                String artistId = data.getSpotifyId();
+                String artistName = data.getName();
                 Intent intent = new Intent(getActivity(), TopTracksActivity.class)
                         .putExtra(Intent.EXTRA_TEXT, artistId)
                         .putExtra("ARTIST_NAME", artistName);

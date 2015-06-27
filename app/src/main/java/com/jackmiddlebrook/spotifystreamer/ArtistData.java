@@ -10,9 +10,9 @@ import android.os.Parcelable;
  */
 public class ArtistData implements Parcelable {
 
-    public String mName;
-    public String mImageUrl;
-    public String mSpotifyId;
+    private String mName;
+    private String mImageUrl;
+    private String mSpotifyId;
 
     /**
      * Constructor
@@ -25,6 +25,30 @@ public class ArtistData implements Parcelable {
     public ArtistData(String name, String imageUrl, String spotifyId) {
         mName = name;
         mImageUrl = imageUrl;
+        mSpotifyId = spotifyId;
+    }
+
+    public String getName() {
+        return mName;
+    }
+
+    public void setName(String name) {
+        mName = name;
+    }
+
+    public String getImageUrl() {
+        return mImageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        mImageUrl = imageUrl;
+    }
+
+    public String getSpotifyId() {
+        return mSpotifyId;
+    }
+
+    public void setSpotifyId(String spotifyId) {
         mSpotifyId = spotifyId;
     }
 

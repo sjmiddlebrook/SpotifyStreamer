@@ -35,14 +35,14 @@ public class ArtistDataArrayAdapter extends ArrayAdapter<ArtistData> {
         ImageView artistImage = (ImageView) convertView.findViewById(R.id.list_item_artist_image_view);
         TextView artistName = (TextView) convertView.findViewById(R.id.list_item_artist_textview);
 
-        if (!data.mImageUrl.equals("")) {
+        if (!data.getImageUrl().equals("")) {
             Picasso.with(getContext())
-                    .load(data.mImageUrl)
+                    .load(data.getImageUrl())
                     .resize(200, 200)
                     .into(artistImage);
         }
 
-        artistName.setText(data.mName);
+        artistName.setText(data.getName());
 
         return convertView;
     }

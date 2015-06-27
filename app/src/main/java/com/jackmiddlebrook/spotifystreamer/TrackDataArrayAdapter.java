@@ -36,15 +36,15 @@ public class TrackDataArrayAdapter extends ArrayAdapter<TrackData> {
         TextView trackName = (TextView) convertView.findViewById(R.id.list_item_track_name_text_view);
         TextView albumName = (TextView) convertView.findViewById(R.id.list_item_album_name_text_view);
 
-        if (!data.mAlbumImageUrl.equals("")) {
+        if (!data.getAlbumImageUrl().equals("")) {
             Picasso.with(getContext())
-                    .load(data.mAlbumImageUrl)
+                    .load(data.getAlbumImageUrl())
                     .resize(200, 200)
                     .into(albumImage);
         }
 
-        trackName.setText(data.mTrackName);
-        albumName.setText(data.mAlbumName);
+        trackName.setText(data.getTrackName());
+        albumName.setText(data.getAlbumName());
 
         return convertView;
     }
