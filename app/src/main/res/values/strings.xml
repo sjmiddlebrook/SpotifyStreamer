@@ -13,4 +13,9 @@
     <string name="country_pref_title">Country for Top Tracks</string>
     <string name="country_pref_default_value">US</string>
     <string name="no_tracks_found_text">No Top Tracks were found. Try searching again.</string>
+    
+    <string name="title_activity_track_player">TrackPlayerActivity</string>
+    <string name="back_btn_description">back button</string>
+    <string name="play_btn_description">play button</string>
+    <string name="forward_btn_description">forward button</string>
 </resources>
