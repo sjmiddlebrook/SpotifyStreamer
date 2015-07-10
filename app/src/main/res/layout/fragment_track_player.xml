@@ -10,21 +10,24 @@
               tools:context="com.jackmiddlebrook.spotifystreamer.TrackPlayerActivityFragment">
 
     <TextView
-        android:id="@+id/artist_name"
+        android:id="@+id/player_artist_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:layout_marginTop="4dp"
         android:layout_marginBottom="6dp"
+        android:textSize="18sp"
         android:text="Artist Name"/>
 
     <TextView
-        android:id="@+id/album_name"
+        android:id="@+id/player_album_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="Album Name"/>
 
     <ImageView
+        android:id="@+id/player_album_image"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         android:layout_gravity="center"
@@ -32,7 +35,7 @@
         android:src="@mipmap/ic_launcher"/>
 
     <TextView
-        android:id="@+id/track_name"
+        android:id="@+id/player_track_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"

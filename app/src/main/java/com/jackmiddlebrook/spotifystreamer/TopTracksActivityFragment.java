@@ -49,7 +49,7 @@ public class TopTracksActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_top_tracks, container, false);
         Intent intent = getActivity().getIntent();
         String spotifyId = intent.getStringExtra(Intent.EXTRA_TEXT);
-        String artistName = intent.getStringExtra("ARTIST_NAME");
+        final String artistName = intent.getStringExtra("ARTIST_NAME");
         mTrackAdapter = new TrackDataArrayAdapter(
                 getActivity(),
                 R.id.list_item_track_name_text_view
@@ -63,9 +63,12 @@ public class TopTracksActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getActivity(), TrackPlayerActivity.class);
+                intent.putExtra("TRACK_DATA", mTrackAdapter.getItem(i));
+                intent.putExtra("ARTIST_NAME", artistName);
                 startActivity(intent);
             }
         });
+
         getActionBar().setSubtitle(artistName);
 
         return rootView;
@@ -89,6 +92,7 @@ public class TopTracksActivityFragment extends Fragment {
                 final List<TrackData> trackDataResults = new ArrayList<>();
                 for (Track track : trackResults) {
                     String trackName = track.name;
+                    String previewUrl = track.preview_url;
                     AlbumSimple albumInfo = track.album;
                     List<Image> imageList = albumInfo.images;
                     String imageUrl = "";
@@ -99,9 +103,8 @@ public class TopTracksActivityFragment extends Fragment {
                         }
                     }
                     String albumName = albumInfo.name;
-                    trackDataResults.add(new TrackData(trackName, imageUrl, albumName));
+                    trackDataResults.add(new TrackData(trackName, imageUrl, albumName, previewUrl));
                 }
-
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

@@ -13,6 +13,7 @@ public class TrackData implements Parcelable {
     private String mTrackName;
     private String mAlbumImageUrl;
     private String mAlbumName;
+    private String mPreviewUrl;
 
     /**
      * Constructor
@@ -20,12 +21,14 @@ public class TrackData implements Parcelable {
      * @param trackName
      * @param imageUrl
      * @param albumName
+     * @param previewUrl
      */
 
-    public TrackData(String trackName, String imageUrl, String albumName) {
+    public TrackData(String trackName, String imageUrl, String albumName, String previewUrl) {
         mTrackName = trackName;
         mAlbumImageUrl = imageUrl;
         mAlbumName = albumName;
+        mPreviewUrl = previewUrl;
     }
 
     public String getTrackName() {
@@ -52,11 +55,20 @@ public class TrackData implements Parcelable {
         mAlbumName = albumName;
     }
 
+    public String getPreviewUrl() {
+        return mPreviewUrl;
+    }
+
+    public void setPreviewUrl(String previewUrl) {
+        mPreviewUrl = previewUrl;
+    }
+
     @Override
     public String toString() {
         return "Artist Data [track name=" + mTrackName
                 + ", image url= " + mAlbumImageUrl
-                + ", album name= " + mAlbumName + "]";
+                + ", album name= " + mAlbumName
+                + ", preview url= " + mPreviewUrl + "]";
     }
 
     @Override
@@ -69,12 +81,14 @@ public class TrackData implements Parcelable {
         parcel.writeString(mTrackName);
         parcel.writeString(mAlbumImageUrl);
         parcel.writeString(mAlbumName);
+        parcel.writeString(mPreviewUrl);
     }
 
     private TrackData(Parcel in) {
         mTrackName = in.readString();
         mAlbumImageUrl = in.readString();
         mAlbumName = in.readString();
+        mPreviewUrl = in.readString();
     }
 
     public static final Parcelable.Creator<TrackData> CREATOR =

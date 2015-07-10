@@ -33,11 +33,8 @@
         </activity>
         <activity
             android:name=".TrackPlayerActivity"
-            android:label="@string/title_activity_track_player"
-            android:parentActivityName=".TopTracksActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.jackmiddlebrook.spotifystreamer.TopTracksActivity" />
+            android:label="@string/title_activity_track_player">
+
         </activity>
     </application>
 
