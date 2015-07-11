@@ -4,8 +4,6 @@
               android:layout_height="match_parent"
               android:orientation="vertical"
               android:paddingBottom="@dimen/activity_vertical_margin"
-              android:paddingLeft="@dimen/activity_horizontal_margin"
-              android:paddingRight="@dimen/activity_horizontal_margin"
               android:paddingTop="@dimen/activity_vertical_margin"
               tools:context="com.jackmiddlebrook.spotifystreamer.TrackPlayerActivityFragment">
 
@@ -13,17 +11,22 @@
         android:id="@+id/player_artist_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:layout_marginTop="4dp"
         android:layout_marginBottom="6dp"
-        android:textSize="18sp"
-        android:text="Artist Name"/>
+        android:layout_marginTop="4dp"
+        android:gravity="center"
+        android:paddingLeft="@dimen/player_padding"
+        android:paddingRight="@dimen/player_padding"
+        android:text="Artist Name"
+        android:textSize="18sp"/>
 
     <TextView
         android:id="@+id/player_album_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
         android:gravity="center"
+        android:paddingLeft="@dimen/player_padding"
+        android:paddingRight="@dimen/player_padding"
         android:text="Album Name"/>
 
     <ImageView
@@ -32,19 +35,46 @@
         android:layout_height="0dp"
         android:layout_gravity="center"
         android:layout_weight="1"
+        android:paddingLeft="@dimen/player_padding"
+        android:paddingRight="@dimen/player_padding"
         android:src="@mipmap/ic_launcher"/>
 
     <TextView
         android:id="@+id/player_track_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:layout_marginBottom="10dp"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:paddingLeft="@dimen/player_padding"
+        android:paddingRight="@dimen/player_padding"
         android:text="Track Name"/>
 
     <SeekBar
+        android:id="@+id/seek_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/player_padding"
+        android:paddingRight="@dimen/player_padding"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:paddingLeft="6dp"
+            android:text="0:00"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:paddingRight="6dp"
+            android:text="0:30"/>
+    </RelativeLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -52,38 +82,40 @@
         android:padding="8dp">
 
         <ImageButton
+            android:id="@+id/back_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:layout_marginRight="12dp"
             android:layout_toLeftOf="@+id/play_button"
             android:layout_toStartOf="@+id/play_button"
-            android:layout_marginRight="12dp"
-            android:layout_marginEnd="12dp"
-            android:scaleType="fitCenter"
-            android:padding="20dp"
             android:contentDescription="@string/back_btn_description"
-            android:src="@mipmap/ic_skip_previous_black_24dp"
-            android:cropToPadding="false"/>
+            android:cropToPadding="false"
+            android:padding="20dp"
+            android:scaleType="fitCenter"
+            android:src="@mipmap/ic_skip_previous_black_24dp"/>
 
         <ImageButton
             android:id="@+id/play_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:scaleType="fitCenter"
-            android:padding="20dp"
             android:contentDescription="@string/play_btn_description"
+            android:padding="20dp"
+            android:scaleType="fitCenter"
             android:src="@mipmap/ic_play_arrow_black_24dp"/>
 
         <ImageButton
+            android:id="@+id/forward_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/play_button"
-            android:layout_toRightOf="@+id/play_button"
             android:layout_marginLeft="12dp"
             android:layout_marginStart="12dp"
-            android:scaleType="fitCenter"
-            android:padding="20dp"
+            android:layout_toEndOf="@+id/play_button"
+            android:layout_toRightOf="@+id/play_button"
             android:contentDescription="@string/forward_btn_description"
+            android:padding="20dp"
+            android:scaleType="fitCenter"
             android:src="@mipmap/ic_skip_next_black_24dp"/>
 
     </RelativeLayout>
