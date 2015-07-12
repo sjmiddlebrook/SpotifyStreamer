@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
+import java.util.List;
 
 
 /**
@@ -27,6 +28,7 @@ public class TrackPlayerActivityFragment extends Fragment {
 
     private final String TAG = TrackPlayerActivityFragment.class.getSimpleName();
     private MediaPlayer mMediaPlayer;
+    private List<TrackData> mTrackDataList;
     private TrackData mTrackData;
     private ImageButton mPlayButton;
     private TextView mArtistNameTextView;
@@ -37,6 +39,8 @@ public class TrackPlayerActivityFragment extends Fragment {
     private ImageButton mForwardButton;
     private SeekBar mSeekBar;
     private Handler mHandler = new Handler();
+    private TextView mPlayerSecondsTextView;
+    private int mSongNumber;
 
     public TrackPlayerActivityFragment() {
     }
@@ -47,13 +51,20 @@ public class TrackPlayerActivityFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_track_player, container, false);
         Intent intent = getActivity().getIntent();
         String artistName = intent.getStringExtra("ARTIST_NAME");
-        mTrackData = intent.getExtras().getParcelable("TRACK_DATA");
-        Log.v(TAG, "Track: " + mTrackData.toString());
+        mSongNumber = intent.getIntExtra("SONG_NUMBER", 1);
+        mTrackDataList = intent.getExtras().getParcelableArrayList("TRACK_DATA_LIST");
+        mTrackData = mTrackDataList.get(mSongNumber);
+        for (TrackData track : mTrackDataList) {
+            Log.v(TAG, "Track: " + track.toString());
+        }
+
         Log.v(TAG, "Artist Name: " + artistName);
+        Log.v(TAG, "song number: " + mSongNumber);
 
         mArtistNameTextView = (TextView) rootView.findViewById(R.id.player_artist_name);
         mAlbumNameTextView = (TextView) rootView.findViewById(R.id.player_album_name);
         mTrackNameTextView = (TextView) rootView.findViewById(R.id.player_track_name);
+        mPlayerSecondsTextView = (TextView) rootView.findViewById(R.id.player_start_seconds);
         mAlbumImageView = (ImageView) rootView.findViewById(R.id.player_album_image);
         mPlayButton = (ImageButton) rootView.findViewById(R.id.play_button);
         mBackButton = (ImageButton) rootView.findViewById(R.id.back_button);
@@ -61,15 +72,7 @@ public class TrackPlayerActivityFragment extends Fragment {
         mSeekBar = (SeekBar) rootView.findViewById(R.id.seek_bar);
 
         mArtistNameTextView.setText(artistName);
-        mAlbumNameTextView.setText(mTrackData.getAlbumName());
-        mTrackNameTextView.setText(mTrackData.getTrackName());
-
-        if (!mTrackData.getAlbumImageUrl().equals("")) {
-            Picasso.with(getActivity().getApplicationContext())
-                    .load(mTrackData.getAlbumImageUrl())
-                    .resize(700, 700)
-                    .into(mAlbumImageView);
-        }
+        updateTrack();
 
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,7 +94,64 @@ public class TrackPlayerActivityFragment extends Fragment {
             }
         });
 
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mMediaPlayer != null) {
+                    mMediaPlayer.stop();
+                    mMediaPlayer.release();
+                    mMediaPlayer = null;
+                    mPlayButton.setImageResource(R.mipmap.ic_play_arrow_black_24dp);
+
+                }
+                if (mSongNumber > 0) {
+                    mSongNumber -= 1;
+                    mTrackData = mTrackDataList.get(mSongNumber);
+                    updateTrack();
+                } else {
+                    mSeekBar.setProgress(0);
+                    mPlayerSecondsTextView.setText("0:00");
+                }
+
+            }
+        });
+
+        mForwardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mMediaPlayer != null) {
+                    mMediaPlayer.stop();
+                    mMediaPlayer.release();
+                    mMediaPlayer = null;
+                    mPlayButton.setImageResource(R.mipmap.ic_play_arrow_black_24dp);
+
+                }
+                if (mSongNumber < mTrackDataList.size()-1) {
+                    mSongNumber += 1;
+                    mTrackData = mTrackDataList.get(mSongNumber);
+                    updateTrack();
+                } else {
+                    mSeekBar.setProgress(0);
+                    mPlayerSecondsTextView.setText("0:00");
+                }
+            }
+        });
+
         return rootView;
+    }
+
+    private void updateTrack() {
+        mAlbumNameTextView.setText(mTrackData.getAlbumName());
+        mTrackNameTextView.setText(mTrackData.getTrackName());
+
+        if (!mTrackData.getAlbumImageUrl().equals("")) {
+            Picasso.with(getActivity().getApplicationContext())
+                    .load(mTrackData.getAlbumImageUrl())
+                    .resize(700, 700)
+                    .into(mAlbumImageView);
+        }
+        mSeekBar.setProgress(0);
+        mPlayerSecondsTextView.setText("0:00");
     }
 
     private void playPreview(String previewUrl) {
@@ -102,29 +162,42 @@ public class TrackPlayerActivityFragment extends Fragment {
             mMediaPlayer.prepareAsync();
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
-                public void onPrepared(MediaPlayer mediaPlayer) {
+                public void onPrepared(final MediaPlayer mediaPlayer) {
                     mMediaPlayer.start();
                     mSeekBar.setMax(mMediaPlayer.getDuration());
                     Runnable progressRunnable = new Runnable() {
                         @Override
                         public void run() {
-                            mSeekBar.setProgress(mMediaPlayer.getCurrentPosition());
-                            mHandler.postDelayed(this, 1000);
+                            if (mMediaPlayer != null) {
+                                int currentPos = (int) Math.round(mMediaPlayer.getCurrentPosition() / 1000.0) * 1000;
+                                currentPos += 1000;
+                                if (currentPos > 30000) {
+                                    currentPos = 30000;
+                                }
+                                mSeekBar.setProgress(currentPos);
+                                String seconds;
+                                if (currentPos < 10000) {
+                                    seconds = "0:0" + currentPos / 1000;
+                                } else {
+                                    seconds = "0:" + currentPos / 1000;
+                                }
+                                mPlayerSecondsTextView.setText(seconds);
+                                mHandler.postDelayed(this, 1000);
+                            }
                         }
                     };
 
-                    new Thread(progressRunnable).start();
+                    progressRunnable.run();
                 }
             });
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onPause() {
+        super.onPause();
         if (mMediaPlayer != null) mMediaPlayer.release();
         mMediaPlayer = null;
     }

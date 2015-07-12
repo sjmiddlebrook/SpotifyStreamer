@@ -3,6 +3,7 @@ package com.jackmiddlebrook.spotifystreamer;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -39,8 +40,13 @@ public class TopTracksActivityFragment extends Fragment {
     private final String TAG = TopTracksActivityFragment.class.getSimpleName();
 
     private TrackDataArrayAdapter mTrackAdapter;
+    private List<TrackData> mTrackDataList;
 
     public TopTracksActivityFragment() {
+    }
+
+    public void setData(List<TrackData> dataList) {
+        mTrackDataList = dataList;
     }
 
     @Override
@@ -63,8 +69,10 @@ public class TopTracksActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent intent = new Intent(getActivity(), TrackPlayerActivity.class);
-                intent.putExtra("TRACK_DATA", mTrackAdapter.getItem(i));
+                intent.putParcelableArrayListExtra("TRACK_DATA_LIST",
+                        (ArrayList<? extends Parcelable>) mTrackDataList);
                 intent.putExtra("ARTIST_NAME", artistName);
+                intent.putExtra("SONG_NUMBER", i);
                 startActivity(intent);
             }
         });
@@ -105,6 +113,7 @@ public class TopTracksActivityFragment extends Fragment {
                     String albumName = albumInfo.name;
                     trackDataResults.add(new TrackData(trackName, imageUrl, albumName, previewUrl));
                 }
+                setData(trackDataResults);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
