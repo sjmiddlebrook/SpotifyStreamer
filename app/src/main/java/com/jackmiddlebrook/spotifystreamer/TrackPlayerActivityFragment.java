@@ -44,7 +44,7 @@ public class TrackPlayerActivityFragment extends Fragment {
 
     public TrackPlayerActivityFragment() {
     }
-
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -54,9 +54,6 @@ public class TrackPlayerActivityFragment extends Fragment {
         mSongNumber = intent.getIntExtra("SONG_NUMBER", 1);
         mTrackDataList = intent.getExtras().getParcelableArrayList("TRACK_DATA_LIST");
         mTrackData = mTrackDataList.get(mSongNumber);
-        for (TrackData track : mTrackDataList) {
-            Log.v(TAG, "Track: " + track.toString());
-        }
 
         Log.v(TAG, "Artist Name: " + artistName);
         Log.v(TAG, "song number: " + mSongNumber);
@@ -73,6 +70,10 @@ public class TrackPlayerActivityFragment extends Fragment {
 
         mArtistNameTextView.setText(artistName);
         updateTrack();
+
+
+        playPreview(mTrackData.getPreviewUrl());
+        mPlayButton.setImageResource(R.mipmap.ic_pause_black_24dp);
 
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,7 +127,7 @@ public class TrackPlayerActivityFragment extends Fragment {
                     mPlayButton.setImageResource(R.mipmap.ic_play_arrow_black_24dp);
 
                 }
-                if (mSongNumber < mTrackDataList.size()-1) {
+                if (mSongNumber < mTrackDataList.size() - 1) {
                     mSongNumber += 1;
                     mTrackData = mTrackDataList.get(mSongNumber);
                     updateTrack();
