@@ -7,7 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 
-public class MainActivity extends AppCompatActivity implements MainActivityFragment.TrackCallback {
+public class MainActivity extends AppCompatActivity implements MainFragment.TrackCallback {
 
     private Boolean mTwoPane;
 
@@ -15,18 +15,7 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (findViewById(R.id.top_tracks_container) != null) {
-            mTwoPane = true;
-
-            if (savedInstanceState == null) {
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.top_tracks_container, new TopTracksActivityFragment())
-                        .commit();
-            }
-
-        } else {
-            mTwoPane = false;
-        }
+        mTwoPane = findViewById(R.id.top_tracks_container) != null;
     }
 
 
@@ -61,10 +50,10 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
             // adding or replacing the top tracks fragment using a
             // fragment transaction.
             Bundle args = new Bundle();
-            args.putString(TopTracksActivityFragment.ARTIST_NAME, artistName);
-            args.putString(TopTracksActivityFragment.SPOTIFY_ID, artistId);
+            args.putString(TopTracksFragment.ARTIST_NAME, artistName);
+            args.putString(TopTracksFragment.SPOTIFY_ID, artistId);
 
-            TopTracksActivityFragment fragment = new TopTracksActivityFragment();
+            TopTracksFragment fragment = new TopTracksFragment();
             fragment.setArguments(args);
 
             getSupportFragmentManager().beginTransaction()
@@ -72,8 +61,8 @@ public class MainActivity extends AppCompatActivity implements MainActivityFragm
                     .commit();
         } else {
             Intent intent = new Intent(this, TopTracksActivity.class)
-                    .putExtra(TopTracksActivityFragment.SPOTIFY_ID, artistId)
-                    .putExtra(TopTracksActivityFragment.ARTIST_NAME, artistName);
+                    .putExtra(TopTracksFragment.SPOTIFY_ID, artistId)
+                    .putExtra(TopTracksFragment.ARTIST_NAME, artistName);
             startActivity(intent);
         }
     }

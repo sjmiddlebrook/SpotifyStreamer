@@ -35,9 +35,9 @@ import retrofit.client.Response;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class MainActivityFragment extends Fragment {
+public class MainFragment extends Fragment {
 
-    private final String TAG = MainActivityFragment.class.getSimpleName();
+    private final String TAG = MainFragment.class.getSimpleName();
 
     private ArtistDataArrayAdapter mArtistAdapter;
     private List<ArtistData> mArtistDataList;
@@ -57,7 +57,7 @@ public class MainActivityFragment extends Fragment {
         void onItemSelected(String artistName, String spotifyId);
     }
 
-    public MainActivityFragment() {
+    public MainFragment() {
     }
 
     public void setData(List<ArtistData> dataList) {
@@ -73,7 +73,7 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
         final EditText searchEditText = (EditText) rootView.findViewById(R.id.artist_search_edit_text);
         searchEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -82,6 +82,11 @@ public class MainActivityFragment extends Fragment {
                 boolean handled = false;
                 if (i == EditorInfo.IME_ACTION_SEARCH) {
                     String searchText = String.valueOf(textView.getText());
+
+                    ListView listView = (ListView) getActivity().findViewById(R.id.tracks_list_view);
+                    if (listView != null) {
+                        listView.setAdapter(null);
+                    }
                     getArtistsFromSpotify(searchText);
                     handled = true;
                 }
@@ -118,10 +123,6 @@ public class MainActivityFragment extends Fragment {
                 ((TrackCallback) getActivity())
                         .onItemSelected(artistName, artistId);
 
-//                Intent intent = new Intent(getActivity(), TopTracksActivity.class)
-//                        .putExtra("SPOTIFY_ID", artistId)
-//                        .putExtra("ARTIST_NAME", artistName);
-//                startActivity(intent);
             }
         });
 

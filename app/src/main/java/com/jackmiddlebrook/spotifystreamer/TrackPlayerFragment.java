@@ -24,9 +24,9 @@ import java.util.List;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class TrackPlayerActivityFragment extends Fragment {
+public class TrackPlayerFragment extends Fragment {
 
-    private final String TAG = TrackPlayerActivityFragment.class.getSimpleName();
+    private final String TAG = TrackPlayerFragment.class.getSimpleName();
     private MediaPlayer mMediaPlayer;
     private List<TrackData> mTrackDataList;
     private TrackData mTrackData;
@@ -42,7 +42,7 @@ public class TrackPlayerActivityFragment extends Fragment {
     private TextView mPlayerSecondsTextView;
     private int mSongNumber;
 
-    public TrackPlayerActivityFragment() {
+    public TrackPlayerFragment() {
     }
     
     @Override

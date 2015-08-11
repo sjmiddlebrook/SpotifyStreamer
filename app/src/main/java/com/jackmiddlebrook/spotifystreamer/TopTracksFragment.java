@@ -35,9 +35,9 @@ import retrofit.client.Response;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class TopTracksActivityFragment extends Fragment {
+public class TopTracksFragment extends Fragment {
 
-    private final String TAG = TopTracksActivityFragment.class.getSimpleName();
+    private final String TAG = TopTracksFragment.class.getSimpleName();
     static final String ARTIST_NAME = "ARTIST_NAME";
     static final String SPOTIFY_ID = "SPOTIFY_ID";
     private String mSpotifyId;
@@ -46,7 +46,7 @@ public class TopTracksActivityFragment extends Fragment {
     private TrackDataArrayAdapter mTrackAdapter;
     private List<TrackData> mTrackDataList;
 
-    public TopTracksActivityFragment() {
+    public TopTracksFragment() {
     }
 
     public void setData(List<TrackData> dataList) {
