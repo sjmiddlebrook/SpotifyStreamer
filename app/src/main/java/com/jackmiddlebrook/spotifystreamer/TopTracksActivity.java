@@ -13,6 +13,24 @@ public class TopTracksActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_top_tracks);
+
+        if (savedInstanceState == null) {
+            // Create the detail fragment and add it to the activity
+            // using a fragment transaction.
+            Bundle arguments = new Bundle();
+            arguments.putString(TopTracksActivityFragment.ARTIST_NAME,
+                    getIntent().getStringExtra(TopTracksActivityFragment.ARTIST_NAME));
+            arguments.putString(TopTracksActivityFragment.SPOTIFY_ID,
+                    getIntent().getStringExtra(TopTracksActivityFragment.SPOTIFY_ID));
+
+            TopTracksActivityFragment fragment = new TopTracksActivityFragment();
+            fragment.setArguments(arguments);
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.top_tracks_container, fragment)
+                    .commit();
+        }
+
     }
 
 

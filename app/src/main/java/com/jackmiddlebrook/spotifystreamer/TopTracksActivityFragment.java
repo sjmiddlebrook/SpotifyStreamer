@@ -38,6 +38,10 @@ import retrofit.client.Response;
 public class TopTracksActivityFragment extends Fragment {
 
     private final String TAG = TopTracksActivityFragment.class.getSimpleName();
+    static final String ARTIST_NAME = "ARTIST_NAME";
+    static final String SPOTIFY_ID = "SPOTIFY_ID";
+    private String mSpotifyId;
+    private String mArtistName;
 
     private TrackDataArrayAdapter mTrackAdapter;
     private List<TrackData> mTrackDataList;
@@ -52,16 +56,20 @@ public class TopTracksActivityFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mSpotifyId = arguments.getString(SPOTIFY_ID);
+            mArtistName = arguments.getString(ARTIST_NAME);
+        }
         View rootView = inflater.inflate(R.layout.fragment_top_tracks, container, false);
-        Intent intent = getActivity().getIntent();
-        String spotifyId = intent.getStringExtra(Intent.EXTRA_TEXT);
-        final String artistName = intent.getStringExtra("ARTIST_NAME");
+
         mTrackAdapter = new TrackDataArrayAdapter(
                 getActivity(),
                 R.id.list_item_track_name_text_view
         );
 
-        getTopTracksFromSpotify(spotifyId);
+        getTopTracksFromSpotify(mSpotifyId);
 
         ListView listView = (ListView) rootView.findViewById(R.id.tracks_list_view);
         listView.setAdapter(mTrackAdapter);
@@ -71,13 +79,13 @@ public class TopTracksActivityFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), TrackPlayerActivity.class);
                 intent.putParcelableArrayListExtra("TRACK_DATA_LIST",
                         (ArrayList<? extends Parcelable>) mTrackDataList);
-                intent.putExtra("ARTIST_NAME", artistName);
+                intent.putExtra("ARTIST_NAME", mArtistName);
                 intent.putExtra("SONG_NUMBER", i);
                 startActivity(intent);
             }
         });
 
-        getActionBar().setSubtitle(artistName);
+        getActionBar().setSubtitle(mArtistName);
 
         return rootView;
     }

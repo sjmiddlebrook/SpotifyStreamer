@@ -2,7 +2,6 @@ package com.jackmiddlebrook.spotifystreamer;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
@@ -44,6 +43,19 @@ public class MainActivityFragment extends Fragment {
     private List<ArtistData> mArtistDataList;
     private final String DATA_VALUE_KEY = "artist data list";
     private final String DATA_BUNDLE_KEY = "artist data bundle";
+
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface TrackCallback {
+        /**
+         * TopTracksFragmentCallback for when an item has been selected.
+         */
+        void onItemSelected(String artistName, String spotifyId);
+    }
 
     public MainActivityFragment() {
     }
@@ -102,10 +114,14 @@ public class MainActivityFragment extends Fragment {
                 ArtistData data = mArtistAdapter.getItem(i);
                 String artistId = data.getSpotifyId();
                 String artistName = data.getName();
-                Intent intent = new Intent(getActivity(), TopTracksActivity.class)
-                        .putExtra(Intent.EXTRA_TEXT, artistId)
-                        .putExtra("ARTIST_NAME", artistName);
-                startActivity(intent);
+
+                ((TrackCallback) getActivity())
+                        .onItemSelected(artistName, artistId);
+
+//                Intent intent = new Intent(getActivity(), TopTracksActivity.class)
+//                        .putExtra("SPOTIFY_ID", artistId)
+//                        .putExtra("ARTIST_NAME", artistName);
+//                startActivity(intent);
             }
         });
 
