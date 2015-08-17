@@ -1,12 +1,10 @@
 package com.jackmiddlebrook.spotifystreamer;
 
-import android.content.Intent;
+import android.app.Fragment;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +24,12 @@ import java.util.List;
  */
 public class TrackPlayerFragment extends Fragment {
 
+    private static final String SONG_PROGRESS_ID = "SONG_PROGRESS";
+    private static final String SEEK_PROGRESS_ID = "SEEK_PROGRESS";
     private final String TAG = TrackPlayerFragment.class.getSimpleName();
+    static final String ARTIST_NAME_ID = "ARTIST_NAME";
+    static final String SONG_NUMBER_ID = "SONG_NUMBER";
+    static final String TRACK_LIST_ID = "TRACK_DATA_LIST";
     private MediaPlayer mMediaPlayer;
     private List<TrackData> mTrackDataList;
     private TrackData mTrackData;
@@ -41,22 +44,35 @@ public class TrackPlayerFragment extends Fragment {
     private Handler mHandler = new Handler();
     private TextView mPlayerSecondsTextView;
     private int mSongNumber;
+    private int mCurrentPos;
+    private int mSongPosition;
+    private boolean mRotated;
+    private String mArtistName;
 
     public TrackPlayerFragment() {
     }
-    
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (savedInstanceState != null) {
+            mSongPosition = savedInstanceState.getInt(SONG_PROGRESS_ID);
+            mCurrentPos = savedInstanceState.getInt(SEEK_PROGRESS_ID);
+            mRotated = true;
+        }
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_track_player, container, false);
-        Intent intent = getActivity().getIntent();
-        String artistName = intent.getStringExtra("ARTIST_NAME");
-        mSongNumber = intent.getIntExtra("SONG_NUMBER", 1);
-        mTrackDataList = intent.getExtras().getParcelableArrayList("TRACK_DATA_LIST");
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            mArtistName = arguments.getString(ARTIST_NAME_ID);
+            mSongNumber = arguments.getInt(SONG_NUMBER_ID);
+            mTrackDataList = arguments.getParcelableArrayList(TRACK_LIST_ID);
+        }
         mTrackData = mTrackDataList.get(mSongNumber);
-
-        Log.v(TAG, "Artist Name: " + artistName);
-        Log.v(TAG, "song number: " + mSongNumber);
 
         mArtistNameTextView = (TextView) rootView.findViewById(R.id.player_artist_name);
         mAlbumNameTextView = (TextView) rootView.findViewById(R.id.player_album_name);
@@ -68,9 +84,8 @@ public class TrackPlayerFragment extends Fragment {
         mForwardButton = (ImageButton) rootView.findViewById(R.id.forward_button);
         mSeekBar = (SeekBar) rootView.findViewById(R.id.seek_bar);
 
-        mArtistNameTextView.setText(artistName);
+        mArtistNameTextView.setText(mArtistName);
         updateTrack();
-
 
         playPreview(mTrackData.getPreviewUrl());
         mPlayButton.setImageResource(R.mipmap.ic_pause_black_24dp);
@@ -138,6 +153,25 @@ public class TrackPlayerFragment extends Fragment {
             }
         });
 
+        mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (mMediaPlayer != null) {
+                    mMediaPlayer.seekTo(seekBar.getProgress());
+                }
+            }
+        });
+
         return rootView;
     }
 
@@ -170,17 +204,23 @@ public class TrackPlayerFragment extends Fragment {
                         @Override
                         public void run() {
                             if (mMediaPlayer != null) {
-                                int currentPos = (int) Math.round(mMediaPlayer.getCurrentPosition() / 1000.0) * 1000;
-                                currentPos += 1000;
-                                if (currentPos > 30000) {
-                                    currentPos = 30000;
+                                if (mRotated) {
+                                    mMediaPlayer.seekTo(mSongPosition);
+                                    mSeekBar.setProgress(mCurrentPos);
+                                    mRotated = false;
                                 }
-                                mSeekBar.setProgress(currentPos);
+                                mSongPosition = mMediaPlayer.getCurrentPosition();
+                                mCurrentPos = (int) Math.round(mSongPosition / 1000.0) * 1000;
+                                mCurrentPos += 1000;
+                                if (mCurrentPos > 30000) {
+                                    mCurrentPos = 30000;
+                                }
+                                mSeekBar.setProgress(mCurrentPos);
                                 String seconds;
-                                if (currentPos < 10000) {
-                                    seconds = "0:0" + currentPos / 1000;
+                                if (mCurrentPos < 10000) {
+                                    seconds = "0:0" + mCurrentPos / 1000;
                                 } else {
-                                    seconds = "0:" + currentPos / 1000;
+                                    seconds = "0:" + mCurrentPos / 1000;
                                 }
                                 mPlayerSecondsTextView.setText(seconds);
                                 mHandler.postDelayed(this, 1000);
@@ -201,5 +241,12 @@ public class TrackPlayerFragment extends Fragment {
         super.onPause();
         if (mMediaPlayer != null) mMediaPlayer.release();
         mMediaPlayer = null;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putInt(SONG_PROGRESS_ID, mSongPosition);
+        outState.putInt(SEEK_PROGRESS_ID, mCurrentPos);
+        super.onSaveInstanceState(outState);
     }
 }

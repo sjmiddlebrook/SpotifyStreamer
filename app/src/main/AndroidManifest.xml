@@ -34,7 +34,7 @@
         </activity>
         <activity
             android:name=".TrackPlayerActivity"
-            android:screenOrientation="portrait"
+            android:theme="@style/Base.Theme.AppCompat.DialogWhenLarge"
             android:label="@string/title_activity_track_player">
 
         </activity>

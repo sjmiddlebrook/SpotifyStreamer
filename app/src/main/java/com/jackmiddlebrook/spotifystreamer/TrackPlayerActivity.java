@@ -1,17 +1,48 @@
 package com.jackmiddlebrook.spotifystreamer;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class TrackPlayerActivity extends AppCompatActivity {
+
+    private static final String TAG_TRACK_PLAYER_FRAGMENT = "track_player_fragment";
+    private TrackPlayerFragment mTrackPlayerFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_player);
+        getSupportActionBar().hide();
+
+        FragmentManager fm = getFragmentManager();
+        mTrackPlayerFragment = (TrackPlayerFragment) fm.findFragmentByTag(TAG_TRACK_PLAYER_FRAGMENT);
+
+        if (mTrackPlayerFragment == null) {
+            mTrackPlayerFragment = new TrackPlayerFragment();
+            Bundle arguments = new Bundle();
+            Intent intent = getIntent();
+            String artistName = intent.getStringExtra(TrackPlayerFragment.ARTIST_NAME_ID);
+            int songNumber = intent.getIntExtra(TrackPlayerFragment.SONG_NUMBER_ID, 1);
+            List<TrackData> trackDataList = intent.getExtras().getParcelableArrayList(TrackPlayerFragment.TRACK_LIST_ID);
+            arguments.putString(TrackPlayerFragment.ARTIST_NAME_ID, artistName);
+            arguments.putInt(TrackPlayerFragment.SONG_NUMBER_ID, songNumber);
+            arguments.putParcelableArrayList(TrackPlayerFragment.TRACK_LIST_ID, (ArrayList<? extends Parcelable>) trackDataList);
+            mTrackPlayerFragment.setArguments(arguments);
+
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.track_player_container, mTrackPlayerFragment, TAG_TRACK_PLAYER_FRAGMENT);
+            ft.commit();
+        }
     }
 
 
