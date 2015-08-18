@@ -22,7 +22,9 @@ public class TrackPlayerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_player);
-        getSupportActionBar().hide();
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
 
         FragmentManager fm = getFragmentManager();
         mTrackPlayerFragment = (TrackPlayerFragment) fm.findFragmentByTag(TAG_TRACK_PLAYER_FRAGMENT);
