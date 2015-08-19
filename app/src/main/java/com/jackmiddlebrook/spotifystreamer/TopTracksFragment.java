@@ -1,7 +1,10 @@
 package com.jackmiddlebrook.spotifystreamer;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -37,6 +40,8 @@ import retrofit.client.Response;
  */
 public class TopTracksFragment extends Fragment {
 
+    private static final String DATA_BUNDLE_KEY = "DATA_BUNDLE";
+    private static final String TRACK_LIST_DATA = "TRACK_DATA_LIST";
     private final String TAG = TopTracksFragment.class.getSimpleName();
     static final String ARTIST_NAME = "ARTIST_NAME";
     static final String SPOTIFY_ID = "SPOTIFY_ID";
@@ -68,8 +73,19 @@ public class TopTracksFragment extends Fragment {
                 getActivity(),
                 R.id.list_item_track_name_text_view
         );
-
-        getTopTracksFromSpotify(mSpotifyId);
+        if (savedInstanceState != null) {
+            Bundle bundle = savedInstanceState.getBundle(DATA_BUNDLE_KEY);
+            mTrackDataList = bundle.getParcelableArrayList(TRACK_LIST_DATA);
+            for (TrackData trackData : mTrackDataList) {
+                mTrackAdapter.add(trackData);
+            }
+        } else {
+            if (isNetworkAvailable()) {
+                getTopTracksFromSpotify(mSpotifyId);
+            } else {
+                Toast.makeText(getActivity(), "No Network available. Please check connection and try again.", Toast.LENGTH_LONG).show();
+            }
+        }
 
         ListView listView = (ListView) rootView.findViewById(R.id.tracks_list_view);
         listView.setAdapter(mTrackAdapter);
@@ -156,8 +172,26 @@ public class TopTracksFragment extends Fragment {
         });
     }
 
+    private Bundle getBundledData() {
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList(TRACK_LIST_DATA, (ArrayList<? extends Parcelable>) mTrackDataList);
+        return bundle;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBundle(DATA_BUNDLE_KEY, getBundledData());
+    }
+
     private ActionBar getActionBar() {
         return ((AppCompatActivity) getActivity()).getSupportActionBar();
     }
 
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
 }

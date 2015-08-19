@@ -41,8 +41,8 @@ public class MainFragment extends Fragment {
 
     private ArtistDataArrayAdapter mArtistAdapter;
     private List<ArtistData> mArtistDataList;
-    private final String DATA_VALUE_KEY = "artist data list";
-    private final String DATA_BUNDLE_KEY = "artist data bundle";
+    private final String DATA_VALUE_KEY = "ARTIST_DATA_LIST";
+    private final String DATA_BUNDLE_KEY = "ARTIST_DATA_BUNDLE";
 
 
     /**
