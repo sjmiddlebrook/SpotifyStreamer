@@ -25,7 +25,9 @@ import java.util.List;
 public class TrackPlayerFragment extends Fragment {
 
     private static final String SONG_PROGRESS_ID = "SONG_PROGRESS";
+    private static final String SONG_LIST_POSITION_ID = "SONG_POSITION";
     private static final String SEEK_PROGRESS_ID = "SEEK_PROGRESS";
+    private static final String PAUSED_ID = "IS_PAUSED";
     private final String TAG = TrackPlayerFragment.class.getSimpleName();
     static final String ARTIST_NAME_ID = "ARTIST_NAME";
     static final String SONG_NUMBER_ID = "SONG_NUMBER";
@@ -47,6 +49,7 @@ public class TrackPlayerFragment extends Fragment {
     private int mCurrentPos;
     private int mSongPosition;
     private boolean mRotated;
+    private boolean mIsPaused;
     private String mArtistName;
 
     public TrackPlayerFragment() {
@@ -58,6 +61,8 @@ public class TrackPlayerFragment extends Fragment {
         if (savedInstanceState != null) {
             mSongPosition = savedInstanceState.getInt(SONG_PROGRESS_ID);
             mCurrentPos = savedInstanceState.getInt(SEEK_PROGRESS_ID);
+            mSongNumber = savedInstanceState.getInt(SONG_LIST_POSITION_ID);
+            mIsPaused = savedInstanceState.getBoolean(PAUSED_ID);
             mRotated = true;
         }
     }
@@ -69,7 +74,9 @@ public class TrackPlayerFragment extends Fragment {
         Bundle arguments = getArguments();
         if (arguments != null) {
             mArtistName = arguments.getString(ARTIST_NAME_ID);
-            mSongNumber = arguments.getInt(SONG_NUMBER_ID);
+            if (!mRotated) {
+                mSongNumber = arguments.getInt(SONG_NUMBER_ID);
+            }
             mTrackDataList = arguments.getParcelableArrayList(TRACK_LIST_ID);
         }
         mTrackData = mTrackDataList.get(mSongNumber);
@@ -88,23 +95,29 @@ public class TrackPlayerFragment extends Fragment {
         updateTrack();
 
         playPreview(mTrackData.getPreviewUrl());
-        mPlayButton.setImageResource(R.mipmap.ic_pause_black_24dp);
+        if (mIsPaused) {
+            mPlayButton.setImageResource(R.mipmap.ic_play_arrow_black_24dp);
+        } else {
+            mPlayButton.setImageResource(R.mipmap.ic_pause_black_24dp);
+        }
 
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (mMediaPlayer == null) {
+                    mIsPaused = false;
                     playPreview(mTrackData.getPreviewUrl());
                     mPlayButton.setImageResource(R.mipmap.ic_pause_black_24dp);
 
                 } else {
                     if (mMediaPlayer.isPlaying()) {
                         mMediaPlayer.pause();
+                        mIsPaused = true;
                         mPlayButton.setImageResource(R.mipmap.ic_play_arrow_black_24dp);
                     } else {
                         mMediaPlayer.start();
                         mPlayButton.setImageResource(R.mipmap.ic_pause_black_24dp);
-
+                        mIsPaused = false;
                     }
                 }
             }
@@ -198,7 +211,9 @@ public class TrackPlayerFragment extends Fragment {
             mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(final MediaPlayer mediaPlayer) {
-                    mMediaPlayer.start();
+                    if (!mIsPaused) {
+                        mMediaPlayer.start();
+                    }
                     mSeekBar.setMax(mMediaPlayer.getDuration());
                     Runnable progressRunnable = new Runnable() {
                         @Override
@@ -247,6 +262,8 @@ public class TrackPlayerFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         outState.putInt(SONG_PROGRESS_ID, mSongPosition);
         outState.putInt(SEEK_PROGRESS_ID, mCurrentPos);
+        outState.putInt(SONG_LIST_POSITION_ID, mSongNumber);
+        outState.putBoolean(PAUSED_ID, mIsPaused);
         super.onSaveInstanceState(outState);
     }
 }
